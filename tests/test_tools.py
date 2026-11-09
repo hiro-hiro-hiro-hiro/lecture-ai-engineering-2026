@@ -55,6 +55,26 @@ def test_make_quiz_reports_when_lecture_has_no_terms():
     assert "用語集にありません" in tools.make_quiz(99)
 
 
+def test_make_quiz_study_returns_related_term_from_glossary():
+    terms = {term["id"]: term for term in tools.load_glossary()}
+    result = json.loads(tools.make_quiz_study(2))
+    quiz_term = next(
+        term
+        for term in terms.values()
+        if term["lecture"] == 2
+        and result["question"] == f"「{term['term']}」の意味は？"
+    )
+
+    assert result["answer"] == quiz_term["definition"]
+    assert result["related_term"] in [
+        terms[related_id]["term"] for related_id in quiz_term["related"]
+    ]
+
+
+def test_make_quiz_study_reports_when_lecture_has_no_terms():
+    assert "用語集にありません" in tools.make_quiz_study(99)
+
+
 def test_default_question_of_lecture1_is_answerable_from_glossary():
     """第1回の既定の質問（app.ask）は、第3回のエージェントが用語集で正しく答えられること。"""
     from app.ask import DEFAULT_QUESTION

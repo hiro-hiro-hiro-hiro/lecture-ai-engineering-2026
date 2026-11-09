@@ -11,7 +11,7 @@ from pydantic_ai.models.test import TestModel
 
 from app.agent import agent
 
-BASE_TOOLS = {"search_glossary", "get_lecture_summary", "make_quiz"}
+BASE_TOOLS = {"search_glossary", "get_lecture_summary", "make_quiz", "make_quiz_study"}
 
 
 def _parts(result, kind):
