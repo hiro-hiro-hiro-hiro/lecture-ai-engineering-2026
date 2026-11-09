@@ -97,3 +97,33 @@ def make_quiz(lecture: int) -> str:
         },
         ensure_ascii=False,
     )
+
+
+def make_quiz_study(lecture: int) -> str:
+    """指定した回の用語から1つ選び、確認問題と答えを返す。
+
+    「第2回の確認問題を出して」のように、復習用の問題を求められたときに使う。
+    さらに、選んだ用語に関連する用語を1つ提示する。
+    """
+    glossary = load_glossary()
+    terms_by_id = {entry["id"]: entry for entry in glossary}
+    terms = [
+        entry
+        for entry in glossary
+        if entry["lecture"] == lecture
+        and any(related_id in terms_by_id for related_id in entry["related"])
+    ]
+    if not terms:
+        return f"第{lecture}回の用語または関連用語は用語集にありません。"
+
+    entry = random.choice(terms)
+    related = [terms_by_id[related_id] for related_id in entry["related"] if related_id in terms_by_id]
+    related_entry = random.choice(related)
+    return json.dumps(
+        {
+            "question": f"「{entry['term']}」の意味は？",
+            "answer": entry["definition"],
+            "related_term": related_entry["term"],
+        },
+        ensure_ascii=False,
+    )
